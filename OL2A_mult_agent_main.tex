@@ -9,6 +9,7 @@
 \usepackage{subcaption}
 \usepackage{placeins}
 \usepackage{float}
+\usepackage{xcolor}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -18,7 +19,7 @@
 
 \begin{document}
 %
-\setcounter{page}{12}
+
 \title{Asynchronous and Distributed Multi-agent Systems: An Approach Using Actor Model} %\thanks{Supported by organization x.}}
 %
 %\titlerunning{Abbreviated paper title}
@@ -29,7 +30,8 @@
 Tales B. Nascimento \inst{1}\and
 Carolina G. Marcelino\inst{2,3}\and \\
 Elizabeth F. Wanner\inst{1}\and
-Henrique E. Borges\inst{1}}
+Henrique E. Borges\inst{1}\and
+Sancho Salcedo-Sanz\inst{3}}
 %
 \authorrunning{F. Reis et al.}
 % First names are abbreviated in the running head.
@@ -37,11 +39,11 @@ Henrique E. Borges\inst{1}}
 %
 \institute{Federal Center of Technological Education of Minas Gerais (CEFET-MG), Department of Computing, Brazil \\ \email{\{felipeduarte,henrique\}@lsi.cefetmg.br, efwanner@cefetmg.br}\and
 Federal University of Rio de Janeiro (UFRJ), Institute of Computing, Brazil \email{carolina@ic.ufrj.br}\and
-University of Alcalá, Department of Signal Processing and Communication, Spain}
+University of Alcalá, Department of Signal Processing and Communication, Spain  }
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-	Agent-based and individual-based modeling have been widely used to simulate ecological systems. By and large, these simulations resort to classical concurrence mechanisms based on threads, shared memory and locks. Although these mechanisms seem to work fine for many multi-agent systems (MAS), notably for those requiring synchronous communication between agents, they present severe restrictions in case of complex asynchronous MAS. In this work, we explore an alternative approach to handle concurrency in distributed asynchronous MAS: the actor model. An actor is a concurrent entity capable of sending, receiving and handling asynchronous messages, and creating new actors. Within this paradigm, there are no shared memory and, hence, no data race conditions. We introduce L2L (a short for: Learn to Live, Live to Learn) architecture, a biological inspired distributed non-deterministic MAS simulation framework, in which the autonomous agents (creatures) are endowed with a functional and minimal nervous system model enabling them to learn from its own experiences and interactions with the two-dimensional world, populated with creatures and nutrients. Both creatures and nutrients are encapsulated in actors. The system as a whole performs as a discrete non-deterministic dynamical system, as well as the creatures themselves. The scalability of this actor-based framework is evaluated showing the system scales up and out $-$ many processes per processor node and in a computer cluster. A second experiment is realized to validate the architecture, consisting of an open-ended foraging simulation with both one or many creatures and hundreds of nutrients. Results from this specific actor-based version are compared to those from a classical concurrency version of the same architecture, showing they are equivalent, despite the fact that the former version scales a lot better. Moreover, results show that exploration of the world is unbiased, leading us to conjecture that our system follows ergodic hypothesis. We argue that the actor-based model proves to be very promising to modeling of asynchronous complex MAS. 
+	Agent-based and individual-based modeling have been widely used to simulate ecological systems. The historical architectures designed to artificial life simulation, namely LIDA and MicroPsy, rely into classical concurrence mechanisms based on threads, shared memory and locks. Although these mechanisms seem to work fine for many multi-agent systems (MAS), notably for those requiring synchronous communication between agents, they present severe restrictions in case of complex asynchronous MAS. In this work, we explore an alternative approach to handle concurrency in distributed asynchronous MAS: the actor model. An actor is a concurrent entity capable of sending, receiving and handling asynchronous messages, and creating new actors. Within this paradigm, there are no shared memory and, hence, no data race conditions. We introduce L2L (a short for: Learn to Live, Live to Learn) architecture, a biological inspired distributed non-deterministic MAS simulation framework, in which the autonomous agents (creatures) are endowed with a functional and minimal nervous system model enabling them to learn from its own experiences and interactions with the two-dimensional world, populated with creatures and nutrients. Both creatures and nutrients are encapsulated in actors. The system as a whole performs as a discrete non-deterministic dynamical system, as well as the creatures themselves. The scalability of this actor-based framework is evaluated showing the system scales up and out $-$ many processes per processor node and in a computer cluster. A second experiment is realized to validate the architecture, consisting of an open-ended foraging simulation with both one or many creatures and hundreds of nutrients. Results from this specific actor-based version are compared to those from a classical concurrency version of the same architecture, showing they are equivalent, despite the fact that the former version scales a lot better. Moreover, results show that exploration of the world is unbiased, leading us to conjecture that our system follows ergodic hypothesis. We argue that the actor-based model proves to be very promising to modeling of asynchronous complex MAS. 
 
 
 \keywords{Distributed MAS \and complex agents \and situated cognition.}
@@ -58,10 +60,9 @@ Despite the fact IB and AB modeling are not equivalent in concept, both have bee
 
 In the field of cognitive science, the ABM has been used to  simulate and investigate the possibilities of various mind and brain theories. As an example, the LIDA architecture is based on Global Workspace Theory \cite{Friedlander2008}. It specifies for the agents a cycle of sensing, processing sensor signals and decision making that occurs in parallel and asynchronously, while respecting the order of component stimulation to maintain the cognitive process coherence.
 
-In the model MicroPsi - a multi-agent cognitive framework based on the Psy theory \cite{Bach2003} \cite{Bach2012} - the agent is composed of several components, including sensors and modulators which interacts with the environment, and a motivation set defined by the needs of the agent (\textit{i.e.},  energy, hunger, thirst). These needs trigger the internal cognitive process of the agent and modulate its behavior. There is also a component that coordinate the allocation of the resources to internal components during execution. 
+In the model MicroPsi - a multi-agent cognitive framework based on the Psy theory \cite{Bach2003,Bach2012} - the agent is composed of several components, including sensors and modulators which interacts with the environment, and a motivation set defined by the needs of the agent (\textit{i.e.},  energy, hunger, thirst). These needs trigger the internal cognitive process of the agent and modulate its behavior. There is also a component that coordinate the allocation of the resources to internal components during execution. 
 
 Modeling natural phenomena has to take into account the simultaneity of various events. In real cases, the agent and the environment interacts through a stimulation process simultaneously \cite{Maturana1987}. From this perspective, the actor model is a powerful technique to design this kind of interaction. In the actor model, "computation  is  conceived  as  distributed  in space where computational devices communicate asynchronously and the entire  computation  is  not  in  any  well-defined  state" \cite{Hewitt2012}. Following this definition, actor model helps to design and implement systems in which the events  must happen asynchronously and simultaneously. Furthermore, as the computation is defined as distributed, this approach gives the model the ability to scale over many machines, without changing the fundamental implementation decision. 
-%dei uma miorada no meu paragrafo 
 
 Given that the actor model is very congruent with the need in agent-based modeling systems (ABMS), its usage now is widespread over the literature.
 \textit{Angiani et al.} \cite{angiani2018} presents a framework based on actors to simulate agent-based modeled systems. The authors claim that the actor model of computation has affinity with designing ABMS since both are grounded on reactive behaviour, isolating its internal state from the outside world and communicating through message exchange. The framework is distributed and can be executed in a cluster. A prof of concept is presented for study crowd-behaviour in a building evacuation scenario.
@@ -69,7 +70,7 @@ Another framework designed for ABMS is AgentScriptCC \cite{mohajeri2020}, a doma
 model results in a more fine-grained architecture and the execution of agent-
 oriented program is enhanced, both in scalability and performance perspectives. 
 
-Other architectures that take advantages of the actor computational model, \textit{e.g.} the distributed-first and asynchronous-first perspectives, can be found in the literature. % adicionei essa frase aqui 
+Other architectures that take advantages of the actor computational model, \textit{e.g.} the distributed-first and asynchronous-first perspectives, can be found in the literature.
 Leon \cite{math10030382} creates a .NET framework based on multi-agent systems inspired
 by actor model. A new framework for the analysis of financial networks is
 proposed by Crafa \cite{Crafa}. The approach uses agent-based to actor-based reactive
@@ -82,9 +83,6 @@ optimization \cite{STARZEC2019102573} and multi-objective in a hierarchical appr
 multi-agent system can be applied to reinforcement learning models \cite{9113746,LI2022117900}.
 
 Given that the actor model has been shown to be useful for constructing distributed and efficient MAS, we propose here a new architecture called L2L (Live to learn, learn to live) for simulating artificial creatures. This simulator, a biologically inspired MAS, is a new implementation of a former version previously described by \cite{Campos}. The later could only be executed in one machine with a narrow limit on the number of agents, thus preventing ecosystems simulations. The current implementation specifies each creature and nutrients as actors, which interact through message passing. The results shows a remarkable enhancement in system scalability, allowing further simulations and involving hundreds of complex creatures in a computer cluster. 
-
-% comentei o parágrafo abaixo 
-%The architecture proposed in this article called L2L (Live to learn, learn to live), a biologically inspired MAS architecture, is a new implementation of a former version previously described by \cite{Campos}. This former version could only be ran in one machine with a narrow limit on the number of agents, thus preventing ecosystems simulations. The current implementation specify each creature and nutrients as actors, which interact through message passing. The results shows a remarkable enhancement in system scalability, allowing further simulations involving hundreds of complex creatures in a computer cluster. 
 
 The organization of this paper is as follows: the L2L architecture is presented together with the actor model in section \ref{sec:model}. Experimental results are discussed in section \ref{sec:results}. The, section \ref{sec:conclusion} concludes the work.
 
@@ -99,16 +97,15 @@ The creature is endowed with a basic nervous, emotional and sensory-motor system
 
 The creature internal state is modulated, but not determined, by the external stimuli received through the sensory system. The whole system operates in a non-deterministic dynamics through time and space. It is expected that the behaviour of adaptation, and thus the establishment of food preferences, emerges from the inner emotional-cognitive process. However, it is not the focus of this paper to describe that process (for more details see \cite{Campos}).
 
-The intrinsic model's complexity combined with implementations of decision about concurrency (use of shared memory, threads and locks) have made a single creature computationally heavy, limited to two creatures by computer core. Increasing this number causes the creature behavior becoming incoherent in the sense that, behavioral dynamics loose congruence with inner nervous system dynamics. This upper bound  severely limits the studies involving ecological simulations, e.g. socio-genesis, semiotics, population dynamics, etc. Aiming to use more machines to run a large number of creatures in one simulation, it is necessary to decouple them from the shared memory. The choosen alternative to achieve this goal relies on the actor model.
+The intrinsic model's complexity combined with implementations of decision about concurrency (use of shared memory, threads and locks) have made a single creature computationally heavy, limited to two creatures by computer core. Increasing this number causes the creature behavior becoming incoherent in the sense that, behavioral dynamics loose congruence with inner nervous system dynamics. This upper bound  severely limits the studies involving ecological simulations, e.g. socio-genesis, semiotics, population dynamics, etc. Aiming to use more machines to run a large number of creatures in one simulation, it is necessary to decouple them from the shared memory. The chosen alternative to achieve this goal relies on the actor model.
 
 \subsection{The Actor Model}
 \label{subsec:actors}
 An actor is a mathematical concept of a universal primitive of digital computation \cite{Hewitt2012}. The actor is an entity capable of sending messages, receiving and handling messages, as well as creating new actors. The actor model is by conception concurrent, and all the communications are asynchronously done through exchange, \textit{i.e.},  there is no shared memory and hence no data race conditions. The messages in the actor model are decoupled from the sender and delivered by the system on a best efforts basis\cite{Hewitt2014}. There are no guarantees as to the ordering of messages, so, the system must be carefully prepared to handle the incoming messages no matter their order.
 
-%% Discutir outros modelos de atores implementados: os de erlang e o quasar
 There are many implementations of the actor model, \textit{e.g.}, Erlang - a programming language which its concurrency mechanism works  asynchronously as actors \cite{Armstrong2007}, and Quasar\footnote[1]{http://docs.paralleluniverse.co/quasar/} library that runs over Java Virtual Machine (JVM). The Akka toolkit\footnote[2]{http://akka.io/} is one of these, and we chose it because it best fit the technologies we already used. It does not respects all of the theoretical description from above due to technological constraints and practical factors. Since Akka runs on a JVM and is a library, it cannot strictly guarantee data separation from the actors. Also, the toolkit implements message ordering between pairs of actors. All actions taken by an Akka actor are in response to some received message, whether sent by itself or by another actor, i.e the system is reactive. Yet, it does not guarantee message delivery between two computers.
 
-The advantage of using the actor model is that it provides a higher level of abstraction when compared with the classical concurrent model. Due to the fact that there are no data race conditions, the model scales up, using efficiently the available resources in one machine. Also, the toolkit we used provides an implementation that works with multiple machines, enabling scaling out. In the new implementation, the actor model is used to simulate a two-dimensional world which is composed of artificial creatures and nutrients. Either creatures and components are encapsulated in actors and they exchange stimuli with each other. There is an underling control structure responsible for managing the simulations and replenish the nutrients, if necessary. This structure is shown in Figure \ref{diagramaAtores}. 
+The advantage of using the actor model is that it provides a higher level of abstraction when compared with the classical concurrent model. Due to the fact that there are no data race conditions, the model scales up, using efficiently the available resources in one machine. Also, the toolkit we used provides an implementation that works with multiple machines, enabling scaling out. In the new implementation, the actor model is used to simulate a two-dimensional world which is composed of artificial creatures and nutrients. Either creatures and components are encapsulated in actors and they exchange stimuli with each other. The creatures' and nutrients' implementations are  kept as proposed by \textit{Campos et al.}\cite{Campos}, being just the communication between them implemented using the actor model. There is an underling control structure responsible for managing the simulations and replenish the nutrients, if necessary. This structure is shown in Fig. \ref{diagramaAtores}. 
 
 As said previously, the creature is an actor, and it encapsulates its nervous systems and its other subsystems. Those creature components still use threads as the concurrence model and must run in the same machine. For managing those creatures, there is a holder actor that creates and keeps track of them, and a repository actor that delegates which holder will receive the next creation order. The nutrient repository and holder are analogous to its creature counterparts. The simulation manager is an actor responsible to create, start and stop a given simulation, \textit{i.e.}, given how many creatures and nutrients are populating the world, it asks the repositories to create them and wait for the ready response. When everything is configured, it send messages to start the simulation.
 
@@ -117,7 +114,7 @@ For the control messages (those exchanged by control actors), we implement a syn
 
 \begin{figure*}
 	\centering
-	\includegraphics[width=14cm]{images/diagramaAtores}
+	\includegraphics[width=14cm]{diagramaAtores}
 	\caption{Block diagram for the implemented model. All but the Creature and Nutrient are control actors. Each simulation must have at least one of each type of actor, and at most one actor represented by a square. The communication between the Creature and Nutrient actors with the Collision detector are fire-forget. The other communications have a acknowledge mechanism}
 	\label{diagramaAtores}
 \end{figure*}
@@ -129,67 +126,63 @@ We propose two experiments to validate the present model and evaluate its scalab
 
 \subsection{Model scalability}
 
-For evaluating the scalability of the implementation using the actor model, we measure the average number of exchanged external stimuli between actors as a function of computer nodes running, while keeping the ratio of creatures per machine constant. We start with 10 creatures and 90 nutrients, using one machine for the creatures and another one for the rest of the system. A simulation comprises 30 runs for each configuration, and each run is interrupted after 300 seconds, as our purpose is to evaluate only the  system scalability. It is worth noticing, however, that L2L is designed for open-ended simulations (see  Fig. \ref{inferno}). 
+For evaluating the scalability of the implementation using the actor model, we measure the average number of exchanged external stimuli between actors as a function of computer nodes running, while keeping the ratio of creatures per machine constant. We start with 10 creatures and 90 nutrients, using one machine for the creatures and another one for the rest of the system. A simulation comprises 30 runs for each configuration, and each run is interrupted after 300 seconds, as our purpose is to evaluate only the  system scalability. It is worth noticing, however, that L2L is designed for open-ended simulations (see  Fig. \ref{fig:ratioCreature}). 
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.35]{images/ratioCreature}
-	\caption{Average of exchanged stimuli over number of creatures versus number of computer cores. Each computer node possesses 12 cores.}
-	\label{inferno}
+	\includegraphics[scale=0.5]{ratioCreature}
+	\caption{Average of exchanged stimuli over number of creatures versus number of computer cores. Each computer node possesses 12 cores. The experiment shown that it is possible to increase the number of actors by adding more computer cores in the simulation. This doesn't cause a degradation in the chosen performance indicator (ratio of exchanged stimuli per creature). In fact, this PI tends to a constant, showing that the number of creatures grows faster than the  average of exchanged stimuli.}
+	\label{fig:ratioCreature}
 \end{figure}
 
-Figure \ref{inferno} shows, in the left axis, the ratio of average of exchanged stimuli over number of creature, as well as the total number of actors in the right axis. By increasing both the number of computers and creatures, the ratio curve tends to a constant, which means that the number of creatures grows faster than the average exchanged stimuli. This is the expected behavior because the nutrient density in the world does not change and all the creatures operate in the same manner, thus exchanging approximately the same amount of stimuli.
+Fig. \ref{fig:ratioCreature} shows, in the left axis, the ratio of average of exchanged stimuli over number of creature, as well as the total number of actors in the right axis. By increasing both the number of computers and creatures, the ratio curve tends to a constant, which means that the number of creatures grows faster than the average exchanged stimuli. This is the expected behavior because the nutrient density in the world does not change and all the creatures operate in the same manner, thus exchanging approximately the same amount of stimuli.
 
-%% talk about the increase in the upper bound of creatures per machine, as the new is twenty
 
 \subsection{Model validity}
 A experiment has been designed  to compare the version using actor model and the former version, based on threads and shared memory, and to verify the correctness of the first. It consists of a simple open-ended (the simulation finish when the creature dies) foraging simulation with one creature and ninety nutrients. It has been repeated 50 times for both versions of architecture. 
-%this is new
 Three measures are collected during the experiment:  the creature position updates, the hunger deprivation, and the behavioural efficiency over time.
-The system has a spacial dynamics. Figure \ref{tracing} shows the superimposed path covered by 30 creatures in both implementations. It can be seen the creatures tend to cover all space. Simulations with more creatures show an increased covered area and indicate that the system as a whole seems to be ergodic \cite{Cornfeld2012}. It also shows that the creatures are not skewed in just one direction.
+The system has a spacial dynamics. Fig. \ref{fig:tracing} shows the superimposed path covered by 30 creatures in both implementations. It can be seen the creatures tend to cover all space. Simulations with more creatures show an increased covered area and indicate that the system as a whole seems to be ergodic \cite{Cornfeld2012}. It also shows that the creatures are not skewed in just one direction.
 
 \begin{figure*}[h]
 	\centering
 	\begin{subfigure}[t]{1\textwidth}
 		\centering
-		\includegraphics[height=8cm]{images/tracingAkka}
+		\includegraphics[height=8cm]{tracingAkka}
 		\caption{implementation with actor model}
 		\label{trace:akka}
 	\end{subfigure}%
 	\\
 	\begin{subfigure}[t]{1\textwidth}
 		\centering
-		\includegraphics[height=8cm]{images/tracingNoAkka}
+		\includegraphics[height=8cm]{tracingNoAkka}
 		\caption{implementation without actor model}
 		\label{trace:noAkka}
 	\end{subfigure}%
 	~
-	\caption{Two dimensional plot of superimposed world exploration by 30 independent creatures a) in an actor-based implementation b) in a classical implementation (using threads and shared memory) }
-	\label{tracing}
+	\caption{Two dimensional plot of superimposed world exploration by 30 independent creatures. The x and y axis are Cartesian coordinates. a) in an actor-based implementation b) in a classical implementation (using threads and shared memory)}
+	\label{fig:tracing}
 \end{figure*}
 
 
-Hunger deprivation is the difference between the metabolic consumption of a creature and its energetic income from nutrients, measured in arbitrary units \cite{Campos}. The metabolism is constant, thus the hunger deprivation grows at a constant rate. It reduces when the creature eats, with intensity equivalent to nutrient energetic value. When the deprivation reaches 7, the creature dies. Figure \ref{deprivation} shows the hunger deprivation of a typical creature, (\textit{i.e.}, a creature whose lifetime is close to the mean lifetime of all creatures) of both implementations. 
+Hunger deprivation is the difference between the metabolic consumption of a creature and its energetic income from nutrients, measured in arbitrary units \cite{Campos}. The metabolism is constant, thus the hunger deprivation grows at a constant rate. It reduces when the creature eats, with intensity equivalent to nutrient energetic value. When the deprivation reaches 7, the creature dies. Fig. \ref{deprivation} shows the hunger deprivation of a typical creature, (\textit{i.e.}, a creature whose lifetime is close to the mean lifetime of all creatures) of both implementations. 
 
 Behavioral efficiency is a function of the hunger deprivation that determines the speed and the opening of the creature's vision field, thus changing its ability to find food. It has been modeled according to Yerkes-Dodson law \cite{Yerkes1908} and differs between simple and complex tasks efficiency. A simple task is the one made by a creature when sensing only one nutrient while the complex task happens when there are more than one in the sensitive field. 
 
- Figure \ref{behavior} shows the temporal mean of behavioral efficiency for both implementations. The creature behavior is similar in both versions, which means the creatures of the new implementation retains a coherent behavior. In the figure \ref{fig:behaviorWithAkka}, there is a shrinkage on time axis, caused by changes made on the system to implement the actor model, which can be corrected by tuning the creature metabolic rate. In either figures \ref{fig:behaviorWithAkka} and \ref{fig:behaviorWithout}, the majority of the creatures is dead from 0.15 hours on, and the results are no longer statistically valid, due to the sampling error.
+ Fig. \ref{behavior} shows the temporal mean of behavioral efficiency for both implementations. The creature behavior is similar in both versions, which means the creatures of the new implementation retains a coherent behavior. In the Fig. \ref{fig:behaviorWithAkka}, there is a shrinkage on time axis, caused by changes made on the system to implement the actor model, which can be corrected by tuning the creature metabolic rate. In either Fig. \ref{fig:behaviorWithAkka} and \ref{fig:behaviorWithout}, the majority of the creatures is dead from 0.15 hours on, and the results are no longer statistically valid, due to the sampling error.
  \newpage
-
-
 
 \begin{figure*}[h]
 	\centering
 	\begin{subfigure}[t]{1\textwidth}
 		\centering
-		\includegraphics[height=8cm]{images/arousalAkka}
+		\includegraphics[height=8cm]{arousalAkka}
 		\caption{implementation with actor model}
 		\label{fig:arousalWithAkka}
 	\end{subfigure}%
 	\\
 	\begin{subfigure}[t]{1\textwidth}
 		\centering
-		\includegraphics[height=8cm]{images/arousalNoAkka}
+		\includegraphics[height=8cm]{arousalNoAkka}
 		\caption{implementation without actor model}
 		\label{fig:arousalWithout}
 	\end{subfigure}
@@ -201,20 +194,27 @@ Behavioral efficiency is a function of the hunger deprivation that determines th
 	\centering
 	\begin{subfigure}[t]{1\textwidth}
 		\centering
-		\includegraphics[height=8cm]{images/efficienceAkka}
+		\includegraphics[height=8cm]{efficienceAkka}
 		\caption{implementation with actor model}
 		\label{fig:behaviorWithAkka}
 	\end{subfigure}%
 \\ 
 	\begin{subfigure}[t]{1\textwidth}
 		\centering
-		\includegraphics[height=8cm]{images/efficienceNoAkka}
+		\includegraphics[height=8cm]{efficienceNoAkka}
 		\caption{implementation without actor model}
 		\label{fig:behaviorWithout}
 	\end{subfigure}
 	\caption{Behavioral efficiency of creatures in both implementations. }
 	\label{behavior}
 \end{figure*}
+
+
+Looking into the 30 superimposed tracing of both akka and no-akka implementations in Fig. \ref{fig:tracing}, both experiments explore evenly the artificial world space. The akka version looks more dense, and this is given by the fact that we are running more agents in this experiment. If we look inside the indicators' average over time, arousal in Fig. \ref{deprivation} and behavioural efficiency  in Fig. \ref{behavior}, we can see the curves exhibit strictly the same shape. Both the experiments have, for either simple and complex tasks, a period of reaching the maximum efficiency, a small period of stability for complex task and then its decay, while the efficiency for complex task continues growing. This is also in accordance with the results shown in the original where L2L is presented \cite{Campos}.  
+
+Given that functionally both implementations are similar, the main difference between the original architecture and the version presented in this paper is that, in the last one is possible to execute many creatures in the same simulation, and scale that with the number of machines in the cluster. In the first version of L2L, this was not possible due to the limitations the concurrency model based on shared memory imposes on the communication between the simulation entities. The main shared resource was the environmental shared pool where creatures and nutrients communicate. Removing this single point of communication, enabling direct communication between creatures and the environment enabled us to run many-creature simulations without performance degradation. We consider this the main contribution of this work. Future work is to enable direct communication between the internal creature components, so we expect to improve more the performance and be able to implement new structures that could show more fine social behaviors such as reproduction. 
+
+\color{black}
 
 \newpage
 
